@@ -72,14 +72,23 @@ export const KnowledgeBasePage: React.FC = () => {
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Knowledge Base</h1>
                         <p className="mt-1 text-sm text-gray-600">
-                            Browse and manage helpful articles and resources
+                            {user?.role === 'admin' && 'Manage and organize helpful articles and resources'}
+                            {user?.role === 'agent' && 'Browse articles to help customers and create new ones'}
+                            {user?.role === 'user' && 'Browse helpful articles and find solutions to common issues'}
                         </p>
                     </div>
-                    {(user?.role === 'admin' || user?.role === 'agent') && (
-                        <Button onClick={() => setIsCreatingArticle(true)}>
-                            Create New Article
-                        </Button>
-                    )}
+                    <div className="flex space-x-3">
+                        {(user?.role === 'admin' || user?.role === 'agent') && (
+                            <Button onClick={() => setIsCreatingArticle(true)} className="bg-green-600 hover:bg-green-700">
+                                Create New Article
+                            </Button>
+                        )}
+                        {user?.role === 'admin' && (
+                            <Button variant="outline" onClick={() => console.log('Manage categories')}>
+                                Manage Categories
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Search */}
@@ -196,8 +205,8 @@ export const KnowledgeBasePage: React.FC = () => {
                                             {article.title}
                                         </h3>
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${article.status === 'published'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-gray-100 text-gray-800'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-gray-100 text-gray-800'
                                             }`}>
                                             {article.status}
                                         </span>

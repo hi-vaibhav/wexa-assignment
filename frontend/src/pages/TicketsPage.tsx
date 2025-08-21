@@ -89,14 +89,48 @@ export const TicketsPage: React.FC = () => {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Support Tickets</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">
+                            {user?.role === 'admin' && 'All Support Tickets'}
+                            {user?.role === 'agent' && 'Ticket Management'}
+                            {user?.role === 'user' && 'My Support Tickets'}
+                        </h1>
                         <p className="mt-1 text-sm text-gray-600">
-                            Manage and track your support requests
+                            {user?.role === 'admin' && 'Overview of all tickets in the system'}
+                            {user?.role === 'agent' && 'Handle tickets and help customers'}
+                            {user?.role === 'user' && 'Create and track your support requests'}
                         </p>
                     </div>
-                    <Button onClick={() => setIsCreatingTicket(true)}>
-                        Create New Ticket
-                    </Button>
+
+                    {/* Role-based action buttons */}
+                    <div className="flex space-x-3">
+                        {user?.role === 'user' && (
+                            <Button onClick={() => setIsCreatingTicket(true)} className="bg-blue-600 hover:bg-blue-700">
+                                Create New Ticket
+                            </Button>
+                        )}
+
+                        {user?.role === 'agent' && (
+                            <>
+                                <Button variant="outline" onClick={() => window.location.href = '/tickets?filter=assigned_to_me'}>
+                                    My Tickets
+                                </Button>
+                                <Button variant="outline" onClick={() => window.location.href = '/tickets?filter=unassigned'}>
+                                    Unassigned
+                                </Button>
+                            </>
+                        )}
+
+                        {user?.role === 'admin' && (
+                            <>
+                                <Button variant="outline" onClick={() => window.location.href = '/analytics'}>
+                                    View Analytics
+                                </Button>
+                                <Button variant="outline" onClick={() => window.location.href = '/settings'}>
+                                    System Settings
+                                </Button>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {/* Create Ticket Form */}

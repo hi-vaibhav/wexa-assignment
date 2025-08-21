@@ -6,10 +6,47 @@ import { logger } from '../utils/logger.js';
  */
 class LLMProvider {
     constructor() {
-        this.stubMode = process.env.STUB_MODE === 'true';
-        this.provider = this.stubMode ? 'stub' : 'openai';
-        this.model = this.stubMode ? 'deterministic-v1' : 'gpt-3.5-turbo';
-        this.promptVersion = 'v1.0';
+        // Initialize lazily to ensure environment variables are loaded
+        this._initialized = false;
+        this._stubMode = null;
+        this._provider = null;
+        this._model = null;
+        this._promptVersion = 'v1.0';
+    }
+
+    _ensureInitialized() {
+        if (!this._initialized) {
+            this._stubMode = process.env.STUB_MODE === 'true';
+            this._provider = this._stubMode ? 'stub' : 'openai';
+            this._model = this._stubMode ? 'deterministic-v1' : 'gpt-3.5-turbo';
+
+            logger.info(`LLM Service initialized`, {
+                stubMode: this._stubMode,
+                STUB_MODE_ENV: process.env.STUB_MODE,
+                provider: this._provider
+            });
+
+            this._initialized = true;
+        }
+    }
+
+    get stubMode() {
+        this._ensureInitialized();
+        return this._stubMode;
+    }
+
+    get provider() {
+        this._ensureInitialized();
+        return this._provider;
+    }
+
+    get model() {
+        this._ensureInitialized();
+        return this._model;
+    }
+
+    get promptVersion() {
+        return this._promptVersion;
     }
 
     /**
@@ -19,10 +56,13 @@ class LLMProvider {
         const startTime = Date.now();
 
         try {
+            logger.info(`Classifying with stubMode: ${this.stubMode}`);
             if (this.stubMode) {
+                logger.info('Using stub classification');
                 return this._stubClassify(ticketText);
             }
 
+            logger.info('Using real LLM classification');
             // Real LLM implementation would go here
             return await this._realClassify(ticketText);
         } catch (error) {

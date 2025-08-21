@@ -71,29 +71,84 @@ export const DashboardPage: React.FC = () => {
                         {getGreeting()}, {user?.name}!
                     </h1>
                     <p className="mt-1 text-sm text-gray-600">
-                        Here's what's happening with your helpdesk today.
+                        {user?.role === 'admin' && "Admin Dashboard - Manage your helpdesk system."}
+                        {user?.role === 'agent' && "Agent Dashboard - Handle support tickets and help customers."}
+                        {user?.role === 'user' && "Welcome to the helpdesk - Get help and track your tickets."}
                     </p>
                 </div>
 
-                {/* Quick Actions */}
+                {/* Role-based Quick Actions */}
                 <div className="mb-8">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
                     <div className="flex flex-wrap gap-4">
-                        <Link to="/tickets">
-                            <Button className="bg-blue-600 hover:bg-blue-700">
-                                📝 Create New Ticket
-                            </Button>
-                        </Link>
-                        <Link to="/kb">
-                            <Button variant="outline">
-                                📚 Browse Knowledge Base
-                            </Button>
-                        </Link>
-                        {(user?.role === 'admin' || user?.role === 'agent') && (
-                            <Link to="/analytics">
-                                <Button variant="outline">
-                                    📊 View Analytics
-                                </Button>
-                            </Link>
+                        {user?.role === 'user' && (
+                            <>
+                                <Link to="/tickets">
+                                    <Button className="bg-blue-600 hover:bg-blue-700">
+                                        📝 Create New Ticket
+                                    </Button>
+                                </Link>
+                                <Link to="/kb">
+                                    <Button variant="outline">
+                                        📚 Browse Knowledge Base
+                                    </Button>
+                                </Link>
+                            </>
+                        )}
+
+                        {user?.role === 'agent' && (
+                            <>
+                                <Link to="/tickets?status=waiting_human">
+                                    <Button className="bg-orange-600 hover:bg-orange-700">
+                                        🔔 My Assigned Tickets
+                                    </Button>
+                                </Link>
+                                <Link to="/tickets?status=open">
+                                    <Button className="bg-blue-600 hover:bg-blue-700">
+                                        📋 Open Tickets
+                                    </Button>
+                                </Link>
+                                <Link to="/kb">
+                                    <Button variant="outline">
+                                        📚 Knowledge Base
+                                    </Button>
+                                </Link>
+                                <Link to="/analytics">
+                                    <Button variant="outline">
+                                        📊 Performance Analytics
+                                    </Button>
+                                </Link>
+                            </>
+                        )}
+
+                        {user?.role === 'admin' && (
+                            <>
+                                <Link to="/analytics">
+                                    <Button className="bg-purple-600 hover:bg-purple-700">
+                                        📊 System Analytics
+                                    </Button>
+                                </Link>
+                                <Link to="/users">
+                                    <Button className="bg-green-600 hover:bg-green-700">
+                                        👥 Manage Users
+                                    </Button>
+                                </Link>
+                                <Link to="/tickets">
+                                    <Button variant="outline">
+                                        � All Tickets
+                                    </Button>
+                                </Link>
+                                <Link to="/kb">
+                                    <Button variant="outline">
+                                        📚 Manage Knowledge Base
+                                    </Button>
+                                </Link>
+                                <Link to="/settings">
+                                    <Button variant="outline">
+                                        ⚙️ System Settings
+                                    </Button>
+                                </Link>
+                            </>
                         )}
                     </div>
                 </div>

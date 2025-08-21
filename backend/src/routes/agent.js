@@ -27,12 +27,12 @@ router.post('/triage', authenticateToken, requireAgent, async (req, res) => {
         logger.info(`Manual triage triggered for ticket ${ticketId}`, {
             ticketId,
             traceId,
-            triggeredBy: req.user.id
+            triggeredBy: req.user._id
         });
 
         res.json({
             message: 'Triage job queued successfully',
-            jobId: job.id,
+            jobId: job?.id || 'sync-processing',
             traceId
         });
     } catch (error) {
@@ -72,11 +72,11 @@ router.post('/suggestion/:id/accept', authenticateToken, requireAgent, async (re
     try {
         const { id } = req.params;
 
-        const suggestion = await agentService.acceptSuggestion(id, req.user.id);
+        const suggestion = await agentService.acceptSuggestion(id, req.user._id);
 
         logger.info(`Suggestion ${id} accepted`, {
             suggestionId: id,
-            agentId: req.user.id
+            agentId: req.user._id
         });
 
         res.json({
@@ -101,11 +101,11 @@ router.post('/suggestion/:id/reject', authenticateToken, requireAgent, async (re
         const { id } = req.params;
         const { reason } = req.body;
 
-        const suggestion = await agentService.rejectSuggestion(id, req.user.id, reason);
+        const suggestion = await agentService.rejectSuggestion(id, req.user._id, reason);
 
         logger.info(`Suggestion ${id} rejected`, {
             suggestionId: id,
-            agentId: req.user.id,
+            agentId: req.user._id,
             reason
         });
 

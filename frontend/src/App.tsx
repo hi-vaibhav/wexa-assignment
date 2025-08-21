@@ -3,11 +3,15 @@ import { Toaster } from 'react-hot-toast'
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { AITestPage } from './pages/AITestPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { KnowledgeBasePage } from './pages/KnowledgeBasePage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { SettingsPage } from './pages/SettingsPage'
+import { TicketDetailsPage } from './pages/TicketDetailsPage'
 import { TicketsPage } from './pages/TicketsPage'
+import { UsersPage } from './pages/UsersPage'
 import { useAuthStore } from './stores/authStore'
 
 const App: React.FC = () => {
@@ -82,7 +86,9 @@ const App: React.FC = () => {
                         <Route index element={<Navigate to="/dashboard" replace />} />
                         <Route path="dashboard" element={<DashboardPage />} />
                         <Route path="tickets" element={<TicketsPage />} />
+                        <Route path="tickets/:id" element={<TicketDetailsPage />} />
                         <Route path="kb" element={<KnowledgeBasePage />} />
+                        <Route path="ai-test" element={<AITestPage />} />
 
                         <Route path="analytics" element={
                             <ProtectedRoute requiredRoles={['admin', 'agent']}>
@@ -97,23 +103,13 @@ const App: React.FC = () => {
 
                         <Route path="users" element={
                             <ProtectedRoute requiredRoles={['admin']}>
-                                <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                                    <div className="px-4 py-6 sm:px-0">
-                                        <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-                                        <p className="mt-1 text-sm text-gray-600">Coming soon...</p>
-                                    </div>
-                                </div>
+                                <UsersPage />
                             </ProtectedRoute>
                         } />
 
                         <Route path="settings" element={
                             <ProtectedRoute requiredRoles={['admin']}>
-                                <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                                    <div className="px-4 py-6 sm:px-0">
-                                        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-                                        <p className="mt-1 text-sm text-gray-600">Coming soon...</p>
-                                    </div>
-                                </div>
+                                <SettingsPage />
                             </ProtectedRoute>
                         } />
                     </Route>

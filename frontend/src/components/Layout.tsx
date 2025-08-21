@@ -18,6 +18,7 @@ export const Layout: React.FC = () => {
         { name: 'Dashboard', href: '/dashboard', roles: ['admin', 'agent', 'user'] },
         { name: 'Tickets', href: '/tickets', roles: ['admin', 'agent', 'user'] },
         { name: 'Knowledge Base', href: '/kb', roles: ['admin', 'agent', 'user'] },
+        { name: '🤖 AI Test', href: '/ai-test', roles: ['admin', 'agent'] },
         { name: 'Analytics', href: '/analytics', roles: ['admin', 'agent'] },
         { name: 'Users', href: '/users', roles: ['admin'] },
         { name: 'Settings', href: '/settings', roles: ['admin'] },
@@ -58,10 +59,10 @@ export const Layout: React.FC = () => {
                                     <div className="text-gray-500 capitalize">{user?.role}</div>
                                 </div>
                                 <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user?.role === 'admin'
-                                        ? 'bg-purple-100 text-purple-800'
-                                        : user?.role === 'agent'
-                                            ? 'bg-blue-100 text-blue-800'
-                                            : 'bg-green-100 text-green-800'
+                                    ? 'bg-purple-100 text-purple-800'
+                                    : user?.role === 'agent'
+                                        ? 'bg-blue-100 text-blue-800'
+                                        : 'bg-green-100 text-green-800'
                                     }`}>
                                     {user?.role}
                                 </div>

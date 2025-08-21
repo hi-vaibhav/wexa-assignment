@@ -66,13 +66,15 @@ export const initializeQueues = async () => {
 
 export const addTriageJob = async (ticketId, traceId) => {
     if (!triageQueue) {
-        logger.warn('Triage queue not available, processing ticket synchronously');
+        logger.info('Redis queue not available, processing ticket synchronously', { ticketId, traceId });
         // Process ticket immediately without queue
         try {
+            logger.info(`Starting synchronous triage for ticket ${ticketId}`, { ticketId, traceId });
             await triageTicket(ticketId, traceId);
-            logger.info(`Ticket triaged synchronously: ${ticketId}`, { ticketId, traceId });
+            logger.info(`✅ Ticket triaged synchronously: ${ticketId}`, { ticketId, traceId });
         } catch (error) {
-            logger.error(`Synchronous triage failed for ticket ${ticketId}:`, error);
+            logger.error(`❌ Synchronous triage failed for ticket ${ticketId}:`, { error: error.message, ticketId, traceId });
+            throw error;
         }
         return;
     }

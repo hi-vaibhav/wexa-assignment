@@ -9,6 +9,13 @@ import helmet from 'helmet';
 // Load environment variables first
 dotenv.config();
 
+// Debug environment variables
+logger.info('Environment variables loaded:', {
+    NODE_ENV: process.env.NODE_ENV,
+    STUB_MODE: process.env.STUB_MODE,
+    LLM_PROVIDER: process.env.LLM_PROVIDER
+});
+
 import { connectDB } from './config/database.js';
 import { connectRedis } from './config/redis.js';
 import { errorHandler } from './middleware/errorHandler.js';
