@@ -126,7 +126,7 @@ router.post('/', authenticateToken, requireAdmin, validate(createArticleSchema),
             body,
             tags: tags || [],
             status: status || 'draft',
-            author: req.user.id
+            author: req.user._id
         });
 
         await article.save();
@@ -134,7 +134,7 @@ router.post('/', authenticateToken, requireAdmin, validate(createArticleSchema),
 
         logger.info(`Article created: ${title}`, {
             articleId: article._id,
-            authorId: req.user.id
+            authorId: req.user._id
         });
 
         res.status(201).json({
@@ -172,7 +172,7 @@ router.put('/:id', authenticateToken, requireAdmin, validate(updateArticleSchema
 
         logger.info(`Article updated: ${article.title}`, {
             articleId: article._id,
-            updatedBy: req.user.id
+            updatedBy: req.user._id
         });
 
         res.json({
@@ -199,7 +199,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
 
         logger.info(`Article deleted: ${article.title}`, {
             articleId: article._id,
-            deletedBy: req.user.id
+            deletedBy: req.user._id
         });
 
         res.json({ message: 'Article deleted successfully' });
@@ -235,7 +235,7 @@ router.post('/:id/feedback', authenticateToken, async (req, res) => {
 
         logger.info(`Article feedback: ${helpful ? 'helpful' : 'not helpful'}`, {
             articleId: article._id,
-            userId: req.user.id
+            userId: req.user._id
         });
 
         res.json({

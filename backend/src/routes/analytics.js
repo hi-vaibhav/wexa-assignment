@@ -101,8 +101,8 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
             topCategories: categoryStats
         };
 
-        logger.info(`Dashboard stats fetched for user ${req.user.id}`, {
-            userId: req.user.id,
+        logger.info(`Dashboard stats fetched for user ${req.user._id}`, {
+            userId: req.user._id,
             totalTickets,
             openTickets
         });

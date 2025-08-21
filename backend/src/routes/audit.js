@@ -24,7 +24,7 @@ router.get('/tickets/:ticketId/audit', authenticateToken, requireUser, validateQ
         }
 
         // Check permissions
-        if (req.user.role === 'user' && !ticket.createdBy.equals(req.user.id)) {
+        if (req.user.role === 'user' && !ticket.createdBy.equals(req.user._id)) {
             return res.status(403).json({ error: 'Access denied' });
         }
 
@@ -79,7 +79,7 @@ router.get('/trace/:traceId', authenticateToken, requireUser, async (req, res) =
         const { Ticket } = await import('../models/Ticket.js');
         const ticket = await Ticket.findById(ticketId);
 
-        if (req.user.role === 'user' && ticket && !ticket.createdBy.equals(req.user.id)) {
+        if (req.user.role === 'user' && ticket && !ticket.createdBy.equals(req.user._id)) {
             return res.status(403).json({ error: 'Access denied' });
         }
 
@@ -129,7 +129,7 @@ router.get('/actions', authenticateToken, requireUser, validateQuery(paginationS
         // For regular users, only show their own ticket audit logs
         if (req.user.role === 'user') {
             const { Ticket } = await import('../models/Ticket.js');
-            const userTickets = await Ticket.find({ createdBy: req.user.id }).select('_id');
+            const userTickets = await Ticket.find({ createdBy: req.user._id }).select('_id');
             query.ticketId = { $in: userTickets.map(t => t._id) };
         }
 
@@ -185,7 +185,7 @@ router.get('/stats', authenticateToken, requireUser, async (req, res) => {
         // For regular users, only show their own ticket audit logs
         if (req.user.role === 'user') {
             const { Ticket } = await import('../models/Ticket.js');
-            const userTickets = await Ticket.find({ createdBy: req.user.id }).select('_id');
+            const userTickets = await Ticket.find({ createdBy: req.user._id }).select('_id');
             matchStage.ticketId = { $in: userTickets.map(t => t._id) };
         }
 
@@ -274,7 +274,7 @@ router.get('/export', authenticateToken, requireUser, async (req, res) => {
         // For regular users, only export their own ticket audit logs
         if (req.user.role === 'user') {
             const { Ticket } = await import('../models/Ticket.js');
-            const userTickets = await Ticket.find({ createdBy: req.user.id }).select('_id');
+            const userTickets = await Ticket.find({ createdBy: req.user._id }).select('_id');
             query.ticketId = { $in: userTickets.map(t => t._id) };
         }
 
@@ -297,7 +297,7 @@ router.get('/export', authenticateToken, requireUser, async (req, res) => {
         }
 
         logger.info('Audit logs exported', {
-            userId: req.user.id,
+            userId: req.user._id,
             count: auditLogs.length,
             format,
             startDate,

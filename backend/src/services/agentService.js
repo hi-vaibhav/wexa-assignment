@@ -222,6 +222,16 @@ class AgentService {
             // Assign to human
             await suggestion.save();
 
+            // Also add the draft reply to the ticket so users can see it immediately
+            const systemUser = await this._getSystemUser();
+            ticket.replies.push({
+                author: systemUser._id,
+                content: draft.draftReply,
+                isInternal: false, // Visible to users
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
             ticket.status = 'waiting_human';
             ticket.agentSuggestionId = suggestion._id;
 
@@ -243,6 +253,12 @@ class AgentService {
             }
 
             await ticket.save();
+
+            await this._logAuditEvent(ticket._id, traceId, 'system', 'REPLY_SENT', {
+                replyContent: draft.draftReply.substring(0, 100),
+                isAutoReply: true,
+                confidence: classification.confidence
+            });
 
             return { action: 'assigned_to_human', suggestion, assignee: agent };
         }
@@ -351,6 +367,28 @@ class AgentService {
         suggestion.acceptedBy = agentId;
         suggestion.acceptedAt = new Date();
         await suggestion.save();
+
+        // Add the suggestion as a reply to the ticket so users can see it
+        const ticket = await Ticket.findById(suggestion.ticketId);
+        if (ticket) {
+            const agent = await User.findById(agentId);
+            const newReply = {
+                author: agentId,
+                content: suggestion.draftReply,
+                isInternal: false, // Make it visible to users
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+
+            ticket.replies.push(newReply);
+            await ticket.save();
+
+            logger.info(`Reply added to ticket ${suggestion.ticketId} from accepted suggestion`, {
+                suggestionId,
+                agentId,
+                agentName: agent?.name || 'Unknown Agent'
+            });
+        }
 
         await this._logAuditEvent(
             suggestion.ticketId,

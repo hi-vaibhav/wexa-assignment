@@ -31,9 +31,9 @@ router.get('/', authenticateToken, requireUser, validateQuery(ticketQuerySchema)
 
         // Role-based filtering
         if (req.user.role === 'user') {
-            query.createdBy = req.user.id;
+            query.createdBy = req.user._id;
         } else if (my && (req.user.role === 'agent' || req.user.role === 'admin')) {
-            query.assignee = req.user.id;
+            query.assignee = req.user._id;
         }
 
         // Apply filters
@@ -94,7 +94,7 @@ router.get('/:id', authenticateToken, requireUser, async (req, res) => {
         }
 
         // Check permissions
-        if (req.user.role === 'user' && !ticket.createdBy._id.equals(req.user.id)) {
+        if (req.user.role === 'user' && !ticket.createdBy._id.equals(req.user._id)) {
             return res.status(403).json({ error: 'Access denied' });
         }
 
@@ -117,7 +117,7 @@ router.post('/', authenticateToken, requireUser, validate(createTicketSchema), a
             title,
             description,
             category: category || 'other',
-            createdBy: req.user.id,
+            createdBy: req.user._id,
             attachments: attachments || []
         });
 
@@ -132,7 +132,7 @@ router.post('/', authenticateToken, requireUser, validate(createTicketSchema), a
             ticketId: ticket._id,
             traceId,
             actor: 'user',
-            actorId: req.user.id,
+            actorId: req.user._id,
             action: 'TICKET_CREATED',
             meta: {
                 title: ticket.title,
@@ -146,7 +146,7 @@ router.post('/', authenticateToken, requireUser, validate(createTicketSchema), a
 
         logger.info(`Ticket created: ${title}`, {
             ticketId: ticket._id,
-            userId: req.user.id,
+            userId: req.user._id,
             traceId
         });
 
@@ -176,7 +176,7 @@ router.post('/:id/reply', authenticateToken, requireAgent, validate(replySchema)
 
         // Add reply
         const reply = {
-            author: req.user.id,
+            author: req.user._id,
             content,
             isInternal: isInternal || false
         };
@@ -197,7 +197,7 @@ router.post('/:id/reply', authenticateToken, requireAgent, validate(replySchema)
             ticketId: ticket._id,
             traceId,
             actor: 'agent',
-            actorId: req.user.id,
+            actorId: req.user._id,
             action: 'REPLY_SENT',
             meta: {
                 isInternal,
@@ -208,7 +208,7 @@ router.post('/:id/reply', authenticateToken, requireAgent, validate(replySchema)
 
         logger.info(`Reply added to ticket ${ticket._id}`, {
             ticketId: ticket._id,
-            agentId: req.user.id,
+            agentId: req.user._id,
             isInternal
         });
 
@@ -260,7 +260,7 @@ router.post('/:id/assign', authenticateToken, requireAgent, validate(assignTicke
             ticketId: ticket._id,
             traceId,
             actor: 'agent',
-            actorId: req.user.id,
+            actorId: req.user._id,
             action: 'TICKET_ASSIGNED',
             meta: {
                 assigneeId: assigneeId || null,
@@ -273,7 +273,7 @@ router.post('/:id/assign', authenticateToken, requireAgent, validate(assignTicke
         logger.info(`Ticket ${ticket._id} assigned`, {
             ticketId: ticket._id,
             assigneeId,
-            assignedBy: req.user.id
+            assignedBy: req.user._id
         });
 
         res.json({
@@ -329,7 +329,7 @@ router.patch('/:id/status', authenticateToken, requireAgent, async (req, res) =>
             ticketId: ticket._id,
             traceId,
             actor: 'agent',
-            actorId: req.user.id,
+            actorId: req.user._id,
             action: 'STATUS_CHANGED',
             meta: {
                 oldStatus,
@@ -341,7 +341,7 @@ router.patch('/:id/status', authenticateToken, requireAgent, async (req, res) =>
 
         logger.info(`Ticket ${ticket._id} status changed: ${oldStatus} → ${status}`, {
             ticketId: ticket._id,
-            agentId: req.user.id
+            agentId: req.user._id
         });
 
         res.json({
@@ -371,7 +371,7 @@ router.post('/:id/reopen', authenticateToken, requireUser, async (req, res) => {
         }
 
         // Check permissions
-        if (req.user.role === 'user' && !ticket.createdBy.equals(req.user.id)) {
+        if (req.user.role === 'user' && !ticket.createdBy.equals(req.user._id)) {
             return res.status(403).json({ error: 'Access denied' });
         }
 
@@ -390,7 +390,7 @@ router.post('/:id/reopen', authenticateToken, requireUser, async (req, res) => {
             ticketId: ticket._id,
             traceId,
             actor: req.user.role === 'user' ? 'user' : 'agent',
-            actorId: req.user.id,
+            actorId: req.user._id,
             action: 'TICKET_REOPENED',
             meta: {
                 reopenedBy: req.user.name,
@@ -401,7 +401,7 @@ router.post('/:id/reopen', authenticateToken, requireUser, async (req, res) => {
 
         logger.info(`Ticket ${ticket._id} reopened`, {
             ticketId: ticket._id,
-            userId: req.user.id
+            userId: req.user._id
         });
 
         res.json({

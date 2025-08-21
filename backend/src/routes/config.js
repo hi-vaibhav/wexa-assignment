@@ -73,7 +73,7 @@ router.put('/', authenticateToken, requireAdmin, validate(updateConfigSchema), a
         await config.save();
 
         logger.info('Configuration updated', {
-            updatedBy: req.user.id,
+            updatedBy: req.user._id,
             changes: Object.keys(req.body)
         });
 
@@ -153,7 +153,7 @@ router.put('/thresholds', authenticateToken, requireAdmin, async (req, res) => {
         await config.save();
 
         logger.info('Thresholds updated', {
-            updatedBy: req.user.id,
+            updatedBy: req.user._id,
             global,
             categories,
             autoCloseEnabled
@@ -216,7 +216,7 @@ router.put('/sla', authenticateToken, requireAdmin, async (req, res) => {
         await config.save();
 
         logger.info('SLA configuration updated', {
-            updatedBy: req.user.id,
+            updatedBy: req.user._id,
             slaHours
         });
 
@@ -242,7 +242,7 @@ router.post('/reset', authenticateToken, requireAdmin, async (req, res) => {
         await defaultConfig.save();
 
         logger.info('Configuration reset to defaults', {
-            resetBy: req.user.id
+            resetBy: req.user._id
         });
 
         res.json({
